@@ -1,0 +1,62 @@
+select * from ish_insurancepackages;
+select * from ish_InsurancePolicies;
+select * from ish_Agent;
+-- Create the table with the specified columns
+CREATE TABLE  ish_insurancepackages (
+    insp_id INT PRIMARY KEY,
+    insp_title VARCHAR(60),
+    insp_desc VARCHAR(255),
+    insp_status CHAR(2),
+    insp_range_start NUMERIC,
+    insp_range_end NUMERIC,
+    insp_agelimit_start INT,
+    insp_agelimit_end INT
+);
+
+-- Insert some values into the table
+INSERT INTO  ish_insurancepackages (insp_id, insp_title, insp_desc, insp_status, insp_range_start, insp_range_end, insp_agelimit_start, insp_agelimit_end)
+VALUES
+    (1, 'Insurance Package 1', 'Description for Package 1', 'A', 1000, 5000, 18, 65),
+    (2, 'Insurance Package 2', 'Description for Package 2', 'B', 2000, 6000, 21, 70),
+    (3, 'Insurance Package 3', 'Description for Package 3', 'C', 1500, 5500, 20, 60);
+
+-- Optionally, you can add more INSERT statements to insert additional values.
+
+-- Create the table with the specified columns
+CREATE TABLE ish_InsurancePolicies (
+    iplc_id INT PRIMARY KEY,
+    iplc_cust_id INT,
+    iplc_cdate DATE,
+    iplc_sum_assured NUMERIC,
+    iplc_applicable_date DATE,
+    iplc_insp_id INT,
+    iplc_yrly_prem_amount NUMERIC,
+    iplc_expdate DATE,
+    iplc_agnt_id INT,
+    FOREIGN KEY (iplc_insp_id) REFERENCES ish_insurancepackages(insp_id),
+    FOREIGN KEY (iplc_agnt_id) REFERENCES ish_Agent(AGNT_id)
+);
+
+-- Insert some values into the table
+INSERT INTO ish_InsurancePolicies (iplc_id, iplc_cust_id, iplc_cdate, iplc_sum_assured, iplc_applicable_date, iplc_insp_id, iplc_yrly_prem_amount, iplc_expdate, iplc_agnt_id)
+VALUES
+    (1, 101, '2023-09-25', 50000, '2023-10-01', 1, 2500, '2024-09-25', 1),
+    (2, 102, '2023-09-26', 75000, '2023-10-02', 2, 3000, '2024-09-26', 2),
+    (3, 103, '2023-09-27', 100000, '2023-10-03', 3, 3500, '2024-09-27', 3);
+
+-- Optionally, you can add more INSERT statements to insert additional values.
+-- Create the table with the specified columns
+CREATE TABLE ish_Agent (
+    AGNT_id INT PRIMARY KEY,
+    AGNT_name VARCHAR(225)
+);
+
+-- Insert some values into the table
+INSERT INTO ish_Agent (AGNT_id, AGNT_name)
+VALUES
+    (1, 'Agent 1'),
+    (2, 'Agent 2'),
+    (3, 'Agent 3');
+
+-- Optionally, you can add more INSERT statements to insert additional values.
+
