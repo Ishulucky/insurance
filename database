@@ -152,3 +152,71 @@ CREATE TABLE nikhila_InsurancePolicies (
 
  
 
+CREATE TABLE ish_InsurancePolicies (
+    iplc_id SERIAL PRIMARY KEY,
+    iplc_cust_id INT,
+    iplc_cdate DATE,
+    iplc_sum_assured NUMERIC,
+    iplc_applicable_date DATE,
+    iplc_insp_id INT,
+    iplc_yrly_prem_amount NUMERIC,
+    iplc_expdate DATE,
+    iplc_agnt_id INT,
+    iplc_status VARCHAR(255) DEFAULT 'pending',
+    iplc_count INT,
+    FOREIGN KEY (iplc_insp_id) REFERENCES ish_insurancepackages(insp_id),
+    FOREIGN KEY (iplc_agnt_id) REFERENCES ish_Agent(AGNT_id)
+);
+
+drop table ish_InsurancePolicies;
+select * from InsurancePolicySchedule;
+select * from ish_InsurancePolicies;
+
+-- Inserting sample rows into the ish_InsurancePolicies table
+INSERT INTO ish_InsurancePolicies (iplc_cust_id, iplc_cdate, iplc_sum_assured, iplc_applicable_date, iplc_insp_id, iplc_yrly_prem_amount, iplc_expdate, iplc_agnt_id, iplc_count)
+VALUES
+    (1, '2023-09-25', 100000, '2023-10-01', 1, 1200.00, '2024-09-25', 1, 1),
+    (2, '2023-09-26', 150000, '2023-10-15', 2, 1800.00, '2024-09-26', 2, 2),
+    (3, '2023-09-27', 200000, '2023-10-20', 3, 2400.00, '2024-09-27', 3, 12);
+
+
+CREATE OR REPLACE FUNCTION insert_policy_schedule()
+RETURNS TRIGGER AS $$
+DECLARE
+    schedule_date DATE;
+BEGIN
+    IF NEW.iplc_status = 'approved' AND NEW.iplc_count > 0 THEN
+        -- Calculate the schedule_date increment based on (12 / iplc_count) months
+        schedule_date := NEW.iplc_applicable_date;
+        
+        FOR i IN 1..NEW.iplc_count LOOP
+            INSERT INTO ish_InsurancePolicySchedule (iplc_id, iplc_sindex, iplc_date, iplc_premium, iplc_paid_date)
+            VALUES (NEW.iplc_id, i, schedule_date, NEW.iplc_yrly_prem_amount / NEW.iplc_count, NULL);
+            
+            -- Increment the schedule_date by (12 / iplc_count) months
+            schedule_date := schedule_date + INTERVAL '1 month' * (12 / NEW.iplc_count);
+        END LOOP;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER policy_status_approval_trigger
+AFTER UPDATE ON ish_InsurancePolicies
+FOR EACH ROW
+EXECUTE FUNCTION insert_policy_schedule();
+
+drop table ish_InsurancePolicySchedule;
+UPDATE ish_InsurancePolicies SET iplc_status = 'approved' WHERE iplc_id =5 ;
+CREATE TABLE ish_InsurancePolicySchedule (
+    iplc_id int,
+    iplc_sindex SMALLINT,
+    iplc_date DATE,
+    iplc_premium NUMERIC,
+    iplc_paid_date DATE
+);
+
+DROP TRIGGER IF EXISTS policy_status_approval_trigger ON ish_InsurancePolicies;
+
+select * from ish_InsurancePolicySchedule;
