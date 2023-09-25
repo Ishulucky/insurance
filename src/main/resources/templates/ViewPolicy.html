@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style media="screen">
+        /* Your CSS styling here */
+
+        a:link {
+            text-decoration: none;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .container {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        #showFormButton {
+            padding: 10px 20px;
+            background-color: #22242A;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        #showFormButton:hover {
+            background-color: #22242A;
+        }
+
+        form {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f7f7f7;
+            width: 300px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            background-color: #22242A;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-button {
+            color: red;
+        }
+
+        .add-button-container {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        
+        <div class="add-button-container">
+            <button id="showFormButton">Add Insurance Policy</button>
+        </div>
+        <form th:id="myForm" th:action="@{/addpolicy}" th:object="${insurancePolicy}" method="post">
+            <label for="iplcCustId">Customer ID:</label>
+            <input type="number" id="iplcCustId" th:field="*{iplcCustId}" required /><br><br>
+
+            <label for="iplcCdate">Policy Start Date:</label>
+            <input type="date" id="iplcCdate" th:field="*{iplcCdate}" required /><br><br>
+
+            <label for="iplcSumAssured">Sum Assured:</label>
+            <input type="number" id="iplcSumAssured" th:field="*{iplcSumAssured}" required /><br><br>
+
+            <label for="iplcApplicableDate">Applicable Date:</label>
+            <input type="date" id="iplcApplicableDate" th:field="*{iplcApplicableDate}" required /><br><br>
+
+            <label for="iplcInspId">Insurance Package ID:</label>
+            <input type="number" id="iplcInspId" th:field="*{iplcInspId}" required /><br><br>
+
+            <label for="iplcYrlyPremAmount">Yearly Premium Amount:</label>
+            <input type="number" id="iplcYrlyPremAmount" th:field="*{iplcYrlyPremAmount}" required /><br><br>
+
+            <label for="iplcExpdate">Expiration Date:</label>
+            <input type="date" id="iplcExpdate" th:field="*{iplcExpdate}" required /><br><br>
+
+            <label for="iplcAgntId">Agent ID:</label>
+            <input type="number" id="iplcAgntId" th:field="*{iplcAgntId}" required /><br><br>
+
+            <input type="submit" value="Submit" />
+        </form>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h6 class="panel-title"> List Of Insurance Policies</h6>
+            </div>
+            <table class="table table-hover" id="dev-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer ID</th>
+                        <th>Policy Start Date</th>
+                        <th>Sum Assured</th>
+                        <th>Applicable Date</th>
+                        <th>Insurance Package ID</th>
+                        <th>Yearly Premium Amount</th>
+                        <th>Expiration Date</th>
+                        <th>Agent ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Replace this section with Thymeleaf iteration -->
+                    <tr th:each="policy : ${insurancePolicies}">
+                        <td th:text="${policy.iplcId}"></td>
+                        <td th:text="${policy.iplcCustId}"></td>
+                        <td th:text="${#dates.format(policy.iplcCdate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${policy.iplcSumAssured}"></td>
+                        <td th:text="${#dates.format(policy.iplcApplicableDate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${policy.iplcInspId}"></td>
+                        <td th:text="${policy.iplcYrlyPremAmount}"></td>
+                        <td th:text="${#dates.format(policy.iplcExpdate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${policy.iplcAgntId}"></td>
+                    </tr>
+                    <!-- End of Thymeleaf iteration -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+    <script>
+        // Your JavaScript code here
+        // ...
+
+        // Example Delete Button Handling
+        $(document).ready(function() {
+            $('.delete-button').on('click', function() {
+                // Handle delete button click
+                var hospitalId = $(this).data('hospital-id');
+                var button = this;
+                console.log(hospitalId);
+                $.ajax({
+                    type: 'POST',
+                    url: '/deleteHospital', // Change this to your controller endpoint
+                    data: { hospitalId: hospitalId },
+                    success: function(response) {
+                        console.log("yes");
+                        $(button).closest('tr').remove();
+                        // Handle the success response as needed
+                        // For example, you can remove the deleted row from the table.
+                        alert(response);
+                        // Remove the row from the table
+                    },
+                    error: function() {
+                        alert('Error deleting hospital');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
